@@ -1,19 +1,24 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { Container } from "react-bootstrap";
-import { store } from "../reducers";
 import { Provider } from "react-redux";
+import { store } from "../store/reducer";
 
 import Signup from "./auth/Signup";
+import Login from "./auth/Login";
+import General from "./main/General";
 
-function App() {
+const App = () => {
   return (
     <Provider store={store}>
       <Router>
-        <Signup />
+        <Switch>
+          <Route exact path="/" component={General} />
+          <Route path="/signup" component={Signup} />
+          <Route path="/login" component={Login} />
+        </Switch>
       </Router>
     </Provider>
   );
-}
+};
 
 export default App;

@@ -1,22 +1,25 @@
 import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { Card, Form, Button, Container, Alert } from "react-bootstrap";
+import { connect } from "react-redux";
 import useInput from "../../hooks/useInput";
 import queries from "../../api/queries";
+import { signIn } from "../../store/auth/actions";
 
-const Signup = () => {
+const Login = ({ signIn }) => {
   const email = useInput("", { isEmpty: true, minLength: 6, isEmail: true });
   const pass = useInput("", { isEmpty: true, minLength: 6 });
   const [authError, setAuthError] = useState("");
-  const { signup } = queries();
+  const { login } = queries();
   const history = useHistory();
 
   async function handleSubmit(e) {
     e.preventDefault();
     try {
       setAuthError("");
-      await signup(email.value, pass.value);
-      // dispath
+      await login(email.value, pass.value).then((result) => {
+        signIn(result);
+      });
       history.push("/");
     } catch (error) {
       setAuthError(error.message);
@@ -31,7 +34,7 @@ const Signup = () => {
       <div className="w-100" style={{ maxWidth: "400px" }}>
         <Card>
           <Card.Body>
-            <h2 className="text-center mb-4">Sign Up</h2>
+            <h2 className="text-center mb-4">Log In</h2>
             {email.isDirty && email.isEmpty && (
               <Alert variant="danger">The email field cannot be empty</Alert>
             )}
@@ -72,21 +75,27 @@ const Signup = () => {
                 />
               </Form.Group>
               <Button
-                disabled={!email.inputValid || !pass.inputValid}
                 className="w-100"
                 type="submit"
+                disabled={!email.inputValid || !pass.inputValid}
               >
-                Sign Up
+                Log In
               </Button>
             </Form>
           </Card.Body>
         </Card>
         <div className="w-100 text-center mt-2">
-          Already have an account? <Link to="/login">Log In</Link>
+          Need an account? <Link to="/signup">Sign Up</Link>
         </div>
       </div>
     </Container>
   );
 };
 
-export default Signup;
+const mapDispatchToProps = {
+  signIn: signIn,
+};
+
+const enhance = connect(null, mapDispatchToProps);
+
+export default enhance(Login);
