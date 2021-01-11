@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
+import { connect } from "react-redux";
 import { Card, Form, Button, Container, Alert } from "react-bootstrap";
+import { signIn } from "../../store/auth/actions";
 import useInput from "../../hooks/useInput";
 import queries from "../../api/queries";
 
-const Signup = () => {
+const Signup = ({ signIn }) => {
   const email = useInput("", { isEmpty: true, minLength: 6, isEmail: true });
   const pass = useInput("", { isEmpty: true, minLength: 6 });
   const [authError, setAuthError] = useState("");
@@ -15,8 +17,10 @@ const Signup = () => {
     e.preventDefault();
     try {
       setAuthError("");
-      await signup(email.value, pass.value);
-      // dispath
+      await signup(email.value, pass.value).then((result) => {
+        console.log(result);
+        signIn(result);
+      });
       history.push("/");
     } catch (error) {
       setAuthError(error.message);
@@ -89,4 +93,10 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+const mapDispatchToProps = {
+  signIn: signIn,
+};
+
+const enhance = connect(null, mapDispatchToProps);
+
+export default enhance(Signup);

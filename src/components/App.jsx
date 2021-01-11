@@ -12,9 +12,9 @@ const App = () => {
     <Provider store={store}>
       <Router>
         <Switch>
-          <Route exact path="/" component={General} />
-          <Route path="/signup" component={Signup} />
-          <Route path="/login" component={Login} />
+          <Route exact path="/" render={() => <General />} />
+          <Route path="/signup" render={() => <Signup />} />
+          <Route path="/login" render={() => <Login />} />
         </Switch>
       </Router>
     </Provider>

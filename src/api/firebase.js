@@ -1,16 +1,20 @@
 import firebase from "firebase/app";
+import "firebase/firestore";
 import "firebase/auth";
+import "firebase/storage";
 
-const app = firebase.initializeApp({
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
-  databaseUrl: process.env.REACT_APP_FIREBASE_DATABASE_URL,
-  projectId: process.env.REACT_APP_PROJECT_ID,
-  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
-  messagingSenderId: process.env.REACT_APP_SENDER_ID,
-  appId: process.env.REACT_APP_APP_ID,
-});
+export const config = {
+  apiKey: "AIzaSyC8h0ZwyZEaWkLXLyumTP8iVsMVbeR5PMs",
+  authDomain: "test-cleveroad-wu2on.firebaseapp.com",
+  projectId: "test-cleveroad-wu2on",
+  storageBucket: "test-cleveroad-wu2on.appspot.com",
+  messagingSenderId: "199811211912",
+  appId: "1:199811211912:web:21cdfcf1462d2286ccb53d",
+};
 
-export const auth = app.auth();
+export const app = firebase.initializeApp(config);
+export const db = firebase.firestore(app);
+export const auth = firebase.auth();
+export const storage = firebase.storage();
 
 export default app;
