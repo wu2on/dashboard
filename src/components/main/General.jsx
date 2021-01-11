@@ -11,17 +11,19 @@ import Navbar from "./Navbar";
 import CreateProductForm from "../products/CreateProductForm";
 import ProductList from "../products/ProductList";
 import EditProduct from "../products/EditProduct";
+import Login from "../auth/Login";
 
 const General = ({ isAuth }) => {
-  // if (!isAuth) return <Redirect to="login" />;
+  if (!isAuth) return <Redirect to="login" />;
   return (
     <div>
       <Router>
         <Navbar />
         <Switch>
           <Route path="/create" render={() => <CreateProductForm />} />
-          <Route path="/" render={() => <ProductList />} />
           <Route path="/product/:id" render={() => <EditProduct />} />
+          <Route path="/login" render={() => <Login />} />
+          <Route path="/" render={() => <ProductList />} />
         </Switch>
       </Router>
     </div>

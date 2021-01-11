@@ -11,6 +11,26 @@ class CreateProductForm extends React.Component {
     handleSubmit: PropTypes.func.isRequired,
   };
 
+  required = (value) =>
+    value || typeof value === "number" ? undefined : "Required field";
+
+  maxLength = (max) => (value) =>
+    value && value.length > max
+      ? `Must be ${max} characters or less`
+      : undefined;
+
+  minLength = (min) => (value) =>
+    value && value.length < min
+      ? `Must be ${min} characters or more`
+      : undefined;
+
+  isPositive = (value) => (value < 0 ? "Must be a positive number" : undefined);
+
+  isMoreCurrentDate = (date) =>
+    new Date(date) < new Date()
+      ? "Must be greater than the current date"
+      : undefined;
+
   validateImageWidthHeight = (imageFile) => {
     if (imageFile) {
       const maxWidthHeight = 4000;
@@ -48,7 +68,9 @@ class CreateProductForm extends React.Component {
       const mimeType = "image/jpeg, image/png";
 
       if (!mimeType.includes(imageFile.type)) {
-        return `Image mime type must be ${mimeType}`;
+        return (
+          <Alert variant="danger">Image mime type must be ${mimeType}</Alert>
+        );
       }
     }
   };
@@ -80,13 +102,25 @@ class CreateProductForm extends React.Component {
           onChange={(event) => this.handleChange(event, input)}
           required
         />
-        {meta && meta.invalid && meta.error && <span>{meta.error}</span>}
+        {meta && meta.invalid && meta.error && (
+          <Alert variant="danger">{meta.error}</Alert>
+        )}
       </div>
     );
   };
 
+  renderField = ({ input, type, meta: { touched, error } }) => (
+    <div>
+      <input {...input} type={type} style={FieldStyle} />
+      {touched && error && <Alert variant="danger">{error}</Alert>}
+    </div>
+  );
+
   handleSubmitForm = (values) => {
-    const { date, desc, discount, price, title, image } = values;
+    const { desc, price, title, image } = values;
+    const date = values.date ? new Date(values.date) : null;
+    const discount = values.discount ? values.discount : null;
+
     let rand = Math.random();
     storage
       .ref()
@@ -94,19 +128,25 @@ class CreateProductForm extends React.Component {
       .put(image)
       .then((snapshot) => {
         snapshot.ref.getDownloadURL().then(function (downloadURL) {
-          db.collection("products").add({
-            title: title,
-            desc: desc ? desc : "",
-            price: price,
-            discount: discount,
-            endSaleDate: new Date(date),
-            image: downloadURL,
-          });
+          db.collection("products")
+            .add({
+              title: title,
+              desc: desc ? desc : "",
+              price: price,
+              discount: discount,
+              endSaleDate: new Date(date),
+              image: downloadURL,
+            })
+            .catch((e) => console.log(e));
         });
       });
   };
 
   render() {
+    const maxLength200 = this.maxLength(200);
+    const minLength20 = this.minLength(20);
+    const maxLength60 = this.maxLength(60);
+
     const { handleSubmit } = this.props;
     return (
       <Container className="d-flex align-items-center justify-content-center">
@@ -120,8 +160,8 @@ class CreateProductForm extends React.Component {
                   <Field
                     name="title"
                     type="text"
-                    component="input"
-                    style={FieldStyle}
+                    component={this.renderField}
+                    validate={[this.required, maxLength60, minLength20]}
                   />
                 </Form.Group>
                 <Form.Group>
@@ -129,8 +169,8 @@ class CreateProductForm extends React.Component {
                   <Field
                     name="desc"
                     type="text"
-                    component="input"
-                    style={FieldStyle}
+                    component={this.renderField}
+                    validate={[maxLength200]}
                   />
                 </Form.Group>
                 <Form.Group>
@@ -138,8 +178,8 @@ class CreateProductForm extends React.Component {
                   <Field
                     name="price"
                     type="number"
-                    component="input"
-                    style={FieldStyle}
+                    component={this.renderField}
+                    validate={[this.required, this.isPositive]}
                   />
                 </Form.Group>
                 <Form.Group>
@@ -165,8 +205,8 @@ class CreateProductForm extends React.Component {
                   <Field
                     name="date"
                     type="date"
-                    component="input"
-                    style={FieldStyle}
+                    component={this.renderField}
+                    validate={[this.isMoreCurrentDate]}
                   />
                 </Form.Group>
                 <Form.Group>
@@ -174,8 +214,7 @@ class CreateProductForm extends React.Component {
                   <Field
                     name="discount"
                     type="number"
-                    component="input"
-                    style={FieldStyle}
+                    component={this.renderField}
                   />
                 </Form.Group>
                 <Link to="/">

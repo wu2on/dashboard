@@ -1,5 +1,6 @@
 const FieldStyle = {
   display: "block",
+  marginBottom: "5px",
   width: "100%",
   height: "calc(1.5em + .75rem + 2px)",
   padding: ".375rem .75rem",

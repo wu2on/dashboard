@@ -12,9 +12,9 @@ const App = () => {
     <Provider store={store}>
       <Router>
         <Switch>
-          <Route exact path="/" render={() => <General />} />
           <Route path="/signup" render={() => <Signup />} />
           <Route path="/login" render={() => <Login />} />
+          <Route exact path="/" render={() => <General />} />
         </Switch>
       </Router>
     </Provider>
